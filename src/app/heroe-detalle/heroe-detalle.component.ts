@@ -1,21 +1,21 @@
-import { Component, Input } from '@angular/core';
-import { Heroe } from "../heroe";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 
-import { ActivatedRoute } from "@angular/router";
-import { Location } from "@angular/common";
-import { HeroeService } from "../heroe.service";
+import { Heroe } from '../heroe';
+import { HeroService } from '../heroe.service';
 
 @Component({
-  selector: 'app-heroe-detalle',
+  selector: 'app-hero-detail',
   templateUrl: './heroe-detalle.component.html',
-  styleUrls: ['./heroe-detalle.component.css']
+  styleUrls: [ './heroe-detalle.component.css' ]
 })
-export class HeroeDetalleComponent {
-  @Input() heroe?: Heroe;
+export class HeroDetalleComponent implements OnInit {
+  hero: Heroe | undefined;
 
   constructor(
     private route: ActivatedRoute,
-    private heroeService: HeroeService,
+    private heroService: HeroService,
     private location: Location
   ) {}
 
@@ -24,12 +24,19 @@ export class HeroeDetalleComponent {
   }
 
   getHero(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.heroeService.getHeroe(id)
-      .subscribe(heroe => this.heroe = heroe);
+    const id = parseInt(this.route.snapshot.paramMap.get('id')!, 10);
+    this.heroService.getHero(id)
+      .subscribe(hero => this.hero = hero);
   }
 
-  volver(): void {
+  goBack(): void {
     this.location.back();
+  }
+
+  save(): void {
+    if (this.hero) {
+      this.heroService.updateHero(this.hero)
+        .subscribe(() => this.goBack());
+    }
   }
 }
